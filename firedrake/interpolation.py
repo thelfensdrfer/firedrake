@@ -8,7 +8,7 @@ from ufl.algorithms import extract_arguments
 from pyop2 import op2
 
 from tsfc.fiatinterface import create_element
-from tsfc import compile_expression_at_points as compile_ufl_kernel
+from tsfc import compile_expression_at_points as compile_ufl_kernel, compile_expression_dual_evaluation
 
 import firedrake
 from firedrake import utils
@@ -184,14 +184,14 @@ def _interpolator(V, tensor, expr, subset, arguments, access):
 
     if access is op2.READ:
         raise ValueError("Can't have READ access for output function")
-    if V.ufl_element().mapping() != "identity":
-        raise NotImplementedError("Can only interpolate onto elements "
-                                  "with affine mapping. Try projecting instead")
+    #if V.ufl_element().mapping() != "identity":
+    #    raise NotImplementedError("Can only interpolate onto elements "
+    #                              "with affine mapping. Try projecting instead")
 
     for dual in to_element.dual_basis():
-        if not isinstance(dual, FIAT.functional.PointEvaluation):
-            raise NotImplementedError("Can only interpolate onto point "
-                                      "evaluation operators. Try projecting instead")
+        #if not isinstance(dual, FIAT.functional.PointEvaluation):
+        #    raise NotImplementedError("Can only interpolate onto point "
+        #                              "evaluation operators. Try projecting instead")
         pts, = dual.pt_dict.keys()
         to_pts.append(pts)
 
@@ -209,9 +209,10 @@ def _interpolator(V, tensor, expr, subset, arguments, access):
     if not isinstance(expr, firedrake.Expression):
         if expr.ufl_domain() and expr.ufl_domain() != V.mesh():
             raise NotImplementedError("Interpolation onto another mesh not supported.")
-        if expr.ufl_shape != V.shape:
-            raise ValueError("UFL expression has incorrect shape for interpolation.")
-        ast, oriented, needs_cell_sizes, coefficients, _ = compile_ufl_kernel(expr, to_pts, coords, coffee=False)
+        #if expr.ufl_shape != V.shape:
+        #    raise ValueError("UFL expression has incorrect shape for interpolation.")
+        #ast, oriented, needs_cell_sizes, coefficients, _ = compile_ufl_kernel(expr, to_pts, coords, coffee=False)
+        ast, oriented, needs_cell_sizes, coefficients, _ = compile_expression_dual_evaluation(expr, to_element, coords, coffee=False)
         kernel = op2.Kernel(ast, ast.name)
     elif hasattr(expr, "eval"):
         kernel, oriented, needs_cell_sizes, coefficients = compile_python_kernel(expr, to_pts, to_element, V, coords)
