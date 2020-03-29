@@ -23,6 +23,7 @@ funcspaces = [
     ("Regge", "tensor", "0"),
 ]
 
+
 @pytest.mark.parametrize("space , exp_type, functionspace_type", funcspaces)
 @pytest.mark.parametrize("dim", [2, 3])
 def test_interpolate_vs_project(space, exp_type, functionspace_type, dim):
@@ -42,18 +43,18 @@ def test_interpolate_vs_project(space, exp_type, functionspace_type, dim):
 
     if dim == 2:
         if exp_type == "scalar":
-                expression = x + y
+            expression = x + y
         elif exp_type == "vector":
-                expression = as_vector([x, y])
+            expression = as_vector([x, y])
         elif exp_type == "tensor":
-                expression = as_tensor(([x, y], [x, y]))
+            expression = as_tensor(([x, y], [x, y]))
     elif dim == 3:
         if exp_type == "scalar":
             expression = x + y + z
         elif exp_type == "vector":
-             expression = as_vector([x, y, z])
+            expression = as_vector([x, y, z])
         elif exp_type == "tensor":
-             expression = as_tensor(([x, y, z], [x, y, z], [x, y, z]))
+            expression = as_tensor(([x, y, z], [x, y, z], [x, y, z]))
 
     f = interpolate(expression, V)
     expect = project(expression, V)
