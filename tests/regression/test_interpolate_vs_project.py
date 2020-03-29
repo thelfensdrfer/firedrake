@@ -20,19 +20,19 @@ funcspaces = [
     ("N1div", "vector", "0"),
     ("N2div", "vector", "0"),
     ("BDM", "tensor", "1"),
-    ("Regge", "tensor", "0"),    
+    ("Regge", "tensor", "0"),
 ]
 
 @pytest.mark.parametrize("space , exp_type, functionspace_type", funcspaces)
 @pytest.mark.parametrize("dim", [2, 3])
-def test_interpolation_2d(space, exp_type, functionspace_type, dim):
+def test_interpolate_vs_project(space, exp_type, functionspace_type, dim):
     if dim == 2:
         mesh = SquareMesh(2, 2, 2)
         x, y = SpatialCoordinate(mesh)
     elif dim == 3:
         mesh = CubeMesh(2, 2, 2, 2)
         x, y, z = SpatialCoordinate(mesh)
-      
+
     if functionspace_type == "0":
         V = FunctionSpace(mesh, space, 2)
     elif functionspace_type == "1":
